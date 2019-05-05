@@ -8,6 +8,8 @@ tokens.
 
 This repository is forked from
 the [koa-api-boilerplate](https://github.com/christroutner/koa-api-boilerplate).
+The original application was refactored
+from [this ConnextCMS plugin](https://github.com/christroutner/rpiovn).
 
 
 ## Requirements
