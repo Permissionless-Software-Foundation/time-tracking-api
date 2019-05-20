@@ -38,7 +38,7 @@ async function ensureAdmin (ctx, next) {
   const token = getToken(ctx)
 
   if (!token) {
-    // console.log(`Err: Token not provided.`)
+    console.log(`Err: Token not provided.`)
     ctx.throw(401)
   }
 
@@ -54,7 +54,7 @@ async function ensureAdmin (ctx, next) {
 
   ctx.state.user = await User.findById(decoded.id, '-password')
   if (!ctx.state.user) {
-    // console.log(`Err: Could not find user.`)
+    console.log(`Err: Could not find user.`)
     ctx.throw(401)
   }
 

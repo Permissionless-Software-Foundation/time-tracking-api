@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const rp = require('request-promise')
+const config = require('../config')
 
 const LOCALHOST = 'http://localhost:5000'
 
@@ -93,10 +94,10 @@ async function loginTestUser () {
 
 async function loginAdminUser () {
   try {
-    process.env.NODE_ENV = process.env.NODE_ENV || 'dev'
-    console.log(`env: ${process.env.NODE_ENV}`)
+    // process.env.KOA_ENV = process.env.KOA_ENV || 'dev'
+    // console.log(`env: ${process.env.KOA_ENV}`)
 
-    const FILENAME = `../config/system-user-${process.env.NODE_ENV}.json`
+    const FILENAME = `../config/system-user-${config.env}.json`
     const adminUserData = require(FILENAME)
     console.log(`adminUserData: ${JSON.stringify(adminUserData, null, 2)}`)
 
@@ -128,10 +129,27 @@ async function loginAdminUser () {
   }
 }
 
+async function getAdminJWT () {
+  try {
+    // process.env.KOA_ENV = process.env.KOA_ENV || 'dev'
+    // console.log(`env: ${process.env.KOA_ENV}`)
+
+    const FILENAME = `../config/system-user-${config.env}.json`
+    const adminUserData = require(FILENAME)
+    // console.log(`adminUserData: ${JSON.stringify(adminUserData, null, 2)}`)
+
+    return adminUserData.token
+  } catch (err) {
+    console.error('Error in test/utils.js/getAdminJWT()')
+    throw err
+  }
+}
+
 module.exports = {
   cleanDb,
   authUser,
   createUser,
   loginTestUser,
-  loginAdminUser
+  loginAdminUser,
+  getAdminJWT
 }

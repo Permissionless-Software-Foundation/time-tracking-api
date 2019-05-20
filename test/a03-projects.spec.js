@@ -19,11 +19,13 @@ describe('Projects', () => {
     }
     const testUser = await testUtils.createUser(userObj)
 
-    context.user = testUser.user
-    context.token = testUser.tokend
+    context.testUser = testUser
+
+    const adminJWT = await testUtils.getAdminJWT()
+    context.adminJWT = adminJWT
   })
 
-  describe('POST /projects', () => {
+  describe('POST - Create Project', () => {
     it('should reject project creation if no JWT provided', async () => {
       try {
         const options = {
@@ -44,6 +46,55 @@ describe('Projects', () => {
         assert(err.statusCode === 401, 'Error code 401 expected.')
       }
     })
+
+    it('should reject project creation for non-admin user', async () => {
+      try {
+        const options = {
+          method: 'POST',
+          uri: `${LOCALHOST}/projects`,
+          resolveWithFullResponse: true,
+          json: true,
+          body: {
+            title: 'test project'
+          },
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${context.testUser.token}`
+          }
+        }
+
+        let result = await rp(options)
+        console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+
+        assert(false, 'Unexpected result')
+      } catch (err) {
+        assert(err.statusCode === 401, 'Error code 401 expected.')
+      }
+    })
+
+    it('should create project for admin user', async () => {
+      console.log(`adminJWT: ${context.adminJWT}`)
+
+      const options = {
+        method: 'POST',
+        uri: `${LOCALHOST}/projects`,
+        resolveWithFullResponse: true,
+        json: true,
+        body: {
+          title: 'test project'
+        },
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${context.adminJWT}`
+        }
+      }
+
+      let result = await rp(options)
+      console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+
+      assert(false, 'Unexpected result')
+    })
+
     /*
     it('should sign up', async () => {
       try {
@@ -76,7 +127,7 @@ describe('Projects', () => {
     })
 */
   })
-/*
+  /*
   describe('GET /users', () => {
     it('should not fetch users if the authorization header is missing', async () => {
       try {
