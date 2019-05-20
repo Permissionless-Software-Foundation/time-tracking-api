@@ -6,10 +6,12 @@ const USERNAME = 'test'
 const PASSWORD = 'pass'
 
 // Connect to the Mongo Database.
+// Connect to the Mongo Database.
 mongoose.Promise = global.Promise
+mongoose.set('useCreateIndex', true) // Stop deprecation warning.
 
 async function addUser () {
-  await mongoose.connect(config.database)
+  await mongoose.connect(config.database, { useNewUrlParser: true })
 
   const User = require('../../src/models/users')
 

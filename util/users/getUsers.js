@@ -4,7 +4,8 @@ const config = require('../../config')
 
 // Connect to the Mongo Database.
 mongoose.Promise = global.Promise
-mongoose.connect(config.database)
+mongoose.set('useCreateIndex', true) // Stop deprecation warning.
+mongoose.connect(config.database, { useNewUrlParser: true })
 
 const User = require('../../src/models/users')
 
