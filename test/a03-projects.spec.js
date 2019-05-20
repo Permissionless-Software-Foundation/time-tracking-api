@@ -22,6 +22,7 @@ describe('Projects', () => {
     context.testUser = testUser
 
     const adminJWT = await testUtils.getAdminJWT()
+    console.log(`adminJWT: ${adminJWT}`)
     context.adminJWT = adminJWT
   })
 
@@ -71,8 +72,29 @@ describe('Projects', () => {
         assert(err.statusCode === 401, 'Error code 401 expected.')
       }
     })
+    /*
+    it('should reject empty project', async () => {
+      console.log(`adminJWT: ${context.adminJWT}`)
 
-    it('should create project for admin user', async () => {
+      const options = {
+        method: 'POST',
+        uri: `${LOCALHOST}/projects`,
+        resolveWithFullResponse: true,
+        json: true,
+        body: {},
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${context.adminJWT}`
+        }
+      }
+
+      let result = await rp(options)
+      console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+
+      assert(false, 'Unexpected result')
+    })
+*/
+    it('should create project for admin user with minimum inputs', async () => {
       console.log(`adminJWT: ${context.adminJWT}`)
 
       const options = {

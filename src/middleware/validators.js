@@ -52,6 +52,8 @@ async function ensureAdmin (ctx, next) {
     ctx.throw(401)
   }
 
+  console.log(`decoded: ${JSON.stringify(decoded, null, 2)}`)
+
   ctx.state.user = await User.findById(decoded.id, '-password')
   if (!ctx.state.user) {
     console.log(`Err: Could not find user.`)
