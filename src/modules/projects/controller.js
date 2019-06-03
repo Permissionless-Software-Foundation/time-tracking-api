@@ -10,24 +10,16 @@ const Project = require('../../models/projects')
  * @apiExample Example usage:
  * curl -H "Content-Type: application/json" -X POST -d '{ "project": { "projectname": "johndoe", "password": "secretpasas" } }' localhost:5000/projects
  *
- * @apiParam {Object} project          Project object (required)
- * @apiParam {String} project.projectname Projectname.
- * @apiParam {String} project.password Password.
+ * @apiParam {Object} project Project object (required)
+ * @apiParam {String} project.title Project title (required).
+ * @apiParam {String} project.projectLead GUID of user assigned as project leader.
  *
- * @apiSuccess {Object}   projects           Project object
- * @apiSuccess {ObjectId} projects._id       Project id
- * @apiSuccess {String}   project.type       Project type (admin or project)
- * @apiSuccess {String}   projects.name      Project name
- * @apiSuccess {String}   projects.projectname  Project projectname
+ * @apiSuccess {Boolean}  success Project creation status.
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "project": {
- *          "_id": "56bd1da600a526986cf65c80"
- *          "name": "John Doe"
- *          "projectname": "johndoe"
- *       }
+ *       "success": true
  *     }
  *
  * @apiError UnprocessableEntity Missing required parameters
