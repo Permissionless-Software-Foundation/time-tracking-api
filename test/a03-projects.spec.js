@@ -36,7 +36,9 @@ describe('Projects', () => {
           resolveWithFullResponse: true,
           json: true,
           body: {
-            title: 'test project'
+            project: {
+              title: 'test project'
+            }
           }
         }
 
@@ -57,7 +59,9 @@ describe('Projects', () => {
           resolveWithFullResponse: true,
           json: true,
           body: {
-            title: 'test project'
+            project: {
+              title: 'test project'
+            }
           },
           headers: {
             Accept: 'application/json',
@@ -73,28 +77,33 @@ describe('Projects', () => {
         assert(err.statusCode === 401, 'Error code 401 expected.')
       }
     })
-    /*
+
     it('should reject empty project', async () => {
-      console.log(`adminJWT: ${context.adminJWT}`)
-
-      const options = {
-        method: 'POST',
-        uri: `${LOCALHOST}/projects`,
-        resolveWithFullResponse: true,
-        json: true,
-        body: {},
-        headers: {
-          Accept: 'application/json',
-          Authorization: `Bearer ${context.adminJWT}`
+      try {
+        const options = {
+          method: 'POST',
+          uri: `${LOCALHOST}/projects`,
+          resolveWithFullResponse: true,
+          json: true,
+          body: {},
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${context.adminJWT}`
+          }
         }
+
+        await rp(options)
+        // console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+
+        assert(false, 'Unexpected result')
+      } catch (err) {
+        // console.log(`err: ${JSON.stringify(err, null, 2)}`)
+
+        assert.equal(err.statusCode, 422)
+        assert.include(err.message, 'Path `title` is required')
       }
-
-      let result = await rp(options)
-      console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
-
-      assert(false, 'Unexpected result')
     })
-*/
+
     it('should create project for admin user with minimum inputs', async () => {
       // console.log(`adminJWT: ${context.adminJWT}`)
 
@@ -119,38 +128,6 @@ describe('Projects', () => {
 
       assert.equal(result.body.success, true, 'success expected')
     })
-
-    /*
-    it('should sign up', async () => {
-      try {
-        const options = {
-          method: 'POST',
-          uri: `${LOCALHOST}/users`,
-          resolveWithFullResponse: true,
-          json: true,
-          body: {
-            user: { username: 'supercoolname', password: 'supersecretpassword' }
-          }
-        }
-
-        let result = await rp(options)
-        // console.log(`result: ${JSON.stringify(result, null, 2)}`)
-
-        context.user = result.body.user
-        context.token = result.body.token
-
-        assert(result.statusCode === 200, 'Status Code 200 expected.')
-        assert(result.body.user.username === 'supercoolname', 'Username of test expected')
-        assert(result.body.user.password === undefined, 'Password expected to be omited')
-        assert.property(result.body, 'token', 'Token property exists.')
-      } catch (err) {
-        console.log(
-          'Error authenticating test user: ' + JSON.stringify(err, null, 2)
-        )
-        throw err
-      }
-    })
-*/
   })
   /*
   describe('GET /users', () => {
