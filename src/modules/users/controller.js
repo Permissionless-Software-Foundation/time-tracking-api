@@ -52,7 +52,7 @@ async function createUser (ctx) {
   }
 
   const token = user.generateToken()
-  console.log(`JWT token created: ${token}`)
+  // console.log(`JWT token created: ${token}`)
 
   const response = user.toJSON()
 

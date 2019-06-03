@@ -14,15 +14,16 @@ describe('Projects', () => {
   before(async () => {
     // Create a second test user.
     const userObj = {
-      username: 'test',
+      username: 'test2',
       password: 'pass'
     }
     const testUser = await testUtils.createUser(userObj)
 
     context.testUser = testUser
 
+    // Get the admin JWT token.
     const adminJWT = await testUtils.getAdminJWT()
-    console.log(`adminJWT: ${adminJWT}`)
+    // console.log(`adminJWT: ${adminJWT}`)
     context.adminJWT = adminJWT
   })
 
@@ -95,7 +96,7 @@ describe('Projects', () => {
     })
 */
     it('should create project for admin user with minimum inputs', async () => {
-      console.log(`adminJWT: ${context.adminJWT}`)
+      // console.log(`adminJWT: ${context.adminJWT}`)
 
       const options = {
         method: 'POST',
@@ -103,7 +104,9 @@ describe('Projects', () => {
         resolveWithFullResponse: true,
         json: true,
         body: {
-          title: 'test project'
+          project: {
+            title: 'test project'
+          }
         },
         headers: {
           Accept: 'application/json',
@@ -112,9 +115,9 @@ describe('Projects', () => {
       }
 
       let result = await rp(options)
-      console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+      // console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
 
-      assert(false, 'Unexpected result')
+      assert.equal(result.body.success, true, 'success expected')
     })
 
     /*
