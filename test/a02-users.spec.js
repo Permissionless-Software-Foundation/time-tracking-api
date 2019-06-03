@@ -12,7 +12,7 @@ const context = {}
 
 describe('Users', () => {
   before(async () => {
-    testUtils.cleanDb()
+    // console.log(`config: ${JSON.stringify(config, null, 2)}`)
 
     // Create a second test user.
     const userObj = {
@@ -20,9 +20,22 @@ describe('Users', () => {
       password: 'pass2'
     }
     const testUser = await testUtils.createUser(userObj)
+    // console.log(`testUser2: ${JSON.stringify(testUser, null, 2)}`)
 
     context.user2 = testUser.user
     context.token2 = testUser.token
+    context.id2 = testUser.user._id
+
+    // Get the JWT used to log in as the admin 'system' user.
+    const adminJWT = await testUtils.getAdminJWT()
+    // console.log(`adminJWT: ${adminJWT}`)
+    context.adminJWT = adminJWT
+
+    // const admin = await testUtils.loginAdminUser()
+    // context.adminJWT = admin.token
+
+    // const admin = await adminLib.loginAdmin()
+    // console.log(`admin: ${JSON.stringify(admin, null, 2)}`)
   })
 
   describe('POST /users', () => {
@@ -74,8 +87,14 @@ describe('Users', () => {
         context.token = result.body.token
 
         assert(result.statusCode === 200, 'Status Code 200 expected.')
-        assert(result.body.user.username === 'supercoolname', 'Username of test expected')
-        assert(result.body.user.password === undefined, 'Password expected to be omited')
+        assert(
+          result.body.user.username === 'supercoolname',
+          'Username of test expected'
+        )
+        assert(
+          result.body.user.password === undefined,
+          'Password expected to be omited'
+        )
         assert.property(result.body, 'token', 'Token property exists.')
       } catch (err) {
         console.log(
@@ -373,7 +392,7 @@ describe('Users', () => {
       }
     })
 
-    it('should not be able to update other user', async () => {
+    it('should not be able to update other user when not admin', async () => {
       try {
         const options = {
           method: 'PUT',
@@ -403,6 +422,31 @@ describe('Users', () => {
           throw err
         }
       }
+    })
+
+    it('should be able to update other user when admin', async () => {
+      const adminJWT = context.adminJWT
+
+      const options = {
+        method: 'PUT',
+        uri: `${LOCALHOST}/users/${context.user2._id.toString()}`,
+        resolveWithFullResponse: true,
+        json: true,
+        headers: {
+          Authorization: `Bearer ${adminJWT}`
+        },
+        body: {
+          user: {
+            name: 'This should work'
+          }
+        }
+      }
+
+      let result = await rp(options)
+      // console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+
+      const userName = result.body.user.name
+      assert.equal(userName, 'This should work')
     })
   })
 
@@ -476,7 +520,7 @@ describe('Users', () => {
       }
     })
 
-    it('should delete user', async () => {
+    it('should delete own user', async () => {
       const {
         user: { _id },
         token
@@ -490,6 +534,27 @@ describe('Users', () => {
         headers: {
           Accept: 'application/json',
           Authorization: `Bearer ${token}`
+        }
+      }
+
+      const result = await rp(options)
+      // console.log(`result: ${util.inspect(result.body)}`)
+
+      assert.equal(result.body.success, true)
+    })
+
+    it('should be able to delete other users when admin', async () => {
+      const id = context.id2
+      const adminJWT = context.adminJWT
+
+      const options = {
+        method: 'DELETE',
+        uri: `${LOCALHOST}/users/${id}`,
+        resolveWithFullResponse: true,
+        json: true,
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${adminJWT}`
         }
       }
 

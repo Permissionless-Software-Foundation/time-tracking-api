@@ -12,5 +12,12 @@ the [koa-api-boilerplate](https://github.com/christroutner/koa-api-boilerplate).
 The original application was refactored
 from [this ConnextCMS plugin](https://github.com/christroutner/rpiovn).
 
+
+## IPFS
+v2.3.0 uploaded to IPFS:
+
+- Get it: `ipfs get QmUz4b2KwNLNvHZRTYcgrPCuKAhMB73XWN8vY8LLVVEYV1`
+- Pin it: `ipfs pin add -r QmUz4b2KwNLNvHZRTYcgrPCuKAhMB73XWN8vY8LLVVEYV1`
+
 ## License
 MIT
