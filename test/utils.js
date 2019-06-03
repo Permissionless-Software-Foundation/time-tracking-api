@@ -5,27 +5,12 @@ const config = require('../config')
 const LOCALHOST = 'http://localhost:5000'
 
 // Remove all collections from the DB.
-function cleanDb () {
+async function cleanDb () {
   for (const collection in mongoose.connection.collections) {
     if (mongoose.connection.collections.hasOwnProperty(collection)) {
-      mongoose.connection.collections[collection].deleteMany()
+      await mongoose.connection.collections[collection].deleteMany()
     }
   }
-}
-
-function authUser (agent, callback) {
-  agent
-    .post('/users')
-    .set('Accept', 'application/json')
-    .send({ user: { username: 'test', password: 'pass' } })
-    .end((err, res) => {
-      if (err) { return callback(err) }
-
-      callback(null, {
-        user: res.body.user,
-        token: res.body.token
-      })
-    })
 }
 
 // This function is used to create new users.
@@ -94,9 +79,6 @@ async function loginTestUser () {
 
 async function loginAdminUser () {
   try {
-    // process.env.KOA_ENV = process.env.KOA_ENV || 'dev'
-    // console.log(`env: ${process.env.KOA_ENV}`)
-
     const FILENAME = `../config/system-user-${config.env}.json`
     const adminUserData = require(FILENAME)
     console.log(`adminUserData: ${JSON.stringify(adminUserData, null, 2)}`)
@@ -129,6 +111,7 @@ async function loginAdminUser () {
   }
 }
 
+// Retrieve the admin user JWT token from the JSON file it's saved at.
 async function getAdminJWT () {
   try {
     // process.env.KOA_ENV = process.env.KOA_ENV || 'dev'
@@ -147,7 +130,6 @@ async function getAdminJWT () {
 
 module.exports = {
   cleanDb,
-  authUser,
   createUser,
   loginTestUser,
   loginAdminUser,
