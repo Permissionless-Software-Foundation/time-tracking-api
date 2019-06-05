@@ -2,17 +2,22 @@ const Project = require('../../models/projects')
 
 /**
  * @api {post} /projects Create a new project
- * @apiPermission
- * @apiVersion 1.0.0
+ * @apiPermission admin
  * @apiName CreateProject
  * @apiGroup Projects
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X POST -d '{ "project": { "projectname": "johndoe", "password": "secretpasas" } }' localhost:50011/projects
+ * curl -H "Content-Type: application/json" -H "Authorization: Bearer <JWT Token>" -X POST -d '{ "project": { "title": "test project" } }' localhost:5001/projects
  *
  * @apiParam {Object} project Project object (required)
  * @apiParam {String} project.title Project title (required).
- * @apiParam {String} project.projectLead GUID of user assigned as project leader.
+ * @apiParam {String} project.projectLead (optional) GUID of user assigned as project leader.
+ * @apiParam {String} project.briefContent (optional) Summary.
+ * @apiParam {String} project.extendedContent (optional) Description.
+ * @apiParam {String} project.projectContact (optional) Primary contact for project.
+ * @apiParam {Array} project.contributors (optional) GUID of users contributing to this project.
+ * @apiParam {Array} project.projectWork (optional) GUID of work entries associated with this project.
+ * @apiParam {Array} project.typesOfWork (optional) GUID of work types associated with this project.
  *
  * @apiSuccess {Boolean}  success Project creation status.
  *
@@ -28,7 +33,7 @@ const Project = require('../../models/projects')
  *     HTTP/1.1 422 Unprocessable Entity
  *     {
  *       "status": 422,
- *       "error": "Unprocessable Entity"
+ *       "error": "Path `title` is required"
  *     }
  */
 async function createProject (ctx) {
