@@ -8,7 +8,7 @@ const Project = require('../../models/projects')
  * @apiGroup Projects
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X POST -d '{ "project": { "projectname": "johndoe", "password": "secretpasas" } }' localhost:5000/projects
+ * curl -H "Content-Type: application/json" -X POST -d '{ "project": { "projectname": "johndoe", "password": "secretpasas" } }' localhost:50011/projects
  *
  * @apiParam {Object} project Project object (required)
  * @apiParam {String} project.title Project title (required).
@@ -53,7 +53,7 @@ async function createProject (ctx) {
  * @apiGroup Projects
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X GET localhost:5000/projects
+ * curl -H "Content-Type: application/json" -X GET localhost:5001/projects
  *
  * @apiSuccess {Object[]} projects           Array of project objects
  * @apiSuccess {ObjectId} projects._id       Project id
@@ -86,7 +86,7 @@ async function getProjects (ctx) {
  * @apiGroup Projects
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X GET localhost:5000/projects/56bd1da600a526986cf65c80
+ * curl -H "Content-Type: application/json" -X GET localhost:5001/projects/56bd1da600a526986cf65c80
  *
  * @apiSuccess {Object}   projects           Project object
  * @apiSuccess {ObjectId} projects._id       Project id
@@ -137,7 +137,7 @@ async function getProject (ctx, next) {
  * @apiGroup Projects
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X PUT -d '{ "project": { "name": "Cool new Name" } }' localhost:5000/projects/56bd1da600a526986cf65c80
+ * curl -H "Content-Type: application/json" -X PUT -d '{ "project": { "name": "Cool new Name" } }' localhost:5001/projects/56bd1da600a526986cf65c80
  *
  * @apiParam {Object} project          Project object (required)
  * @apiParam {String} project.name     Name.
@@ -197,7 +197,7 @@ async function updateProject (ctx) {
  * @apiGroup Projects
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X DELETE localhost:5000/projects/56bd1da600a526986cf65c80
+ * curl -H "Content-Type: application/json" -X DELETE localhost:5001/projects/56bd1da600a526986cf65c80
  *
  * @apiSuccess {StatusCode} 200
  *

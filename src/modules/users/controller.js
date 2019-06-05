@@ -8,7 +8,7 @@ const User = require('../../models/users')
  * @apiGroup Users
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X POST -d '{ "user": { "username": "johndoe", "password": "secretpasas" } }' localhost:5000/users
+ * curl -H "Content-Type: application/json" -X POST -d '{ "user": { "username": "johndoe", "password": "secretpasas" } }' localhost:5001/users
  *
  * @apiParam {Object} user          User object (required)
  * @apiParam {String} user.username Username.
@@ -72,7 +72,7 @@ async function createUser (ctx) {
  * @apiGroup Users
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X GET localhost:5000/users
+ * curl -H "Content-Type: application/json" -X GET localhost:5001/users
  *
  * @apiSuccess {Object[]} users           Array of user objects
  * @apiSuccess {ObjectId} users._id       User id
@@ -105,7 +105,7 @@ async function getUsers (ctx) {
  * @apiGroup Users
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X GET localhost:5000/users/56bd1da600a526986cf65c80
+ * curl -H "Content-Type: application/json" -X GET localhost:5001/users/56bd1da600a526986cf65c80
  *
  * @apiSuccess {Object}   users           User object
  * @apiSuccess {ObjectId} users._id       User id
@@ -154,7 +154,7 @@ async function getUser (ctx, next) {
  * @apiGroup Users
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X PUT -d '{ "user": { "name": "Cool new Name" } }' localhost:5000/users/56bd1da600a526986cf65c80
+ * curl -H "Content-Type: application/json" -X PUT -d '{ "user": { "name": "Cool new Name" } }' localhost:5001/users/56bd1da600a526986cf65c80
  *
  * @apiParam {Object} user          User object (required)
  * @apiParam {String} user.name     Name.
@@ -215,7 +215,7 @@ async function updateUser (ctx) {
  * @apiGroup Users
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X DELETE localhost:5000/users/56bd1da600a526986cf65c80
+ * curl -H "Content-Type: application/json" -X DELETE localhost:5001/users/56bd1da600a526986cf65c80
  *
  * @apiSuccess {StatusCode} 200
  *
