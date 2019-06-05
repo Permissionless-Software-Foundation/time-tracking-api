@@ -53,7 +53,7 @@ async function createSystemUser () {
 
     // Change the user type to admin
     user.type = 'admin'
-    // console.log(`user: ${JSON.stringify(user, null, 2)}`)
+    console.log(`user: ${JSON.stringify(user, null, 2)}`)
 
     // Save the user model.
     await user.save()
