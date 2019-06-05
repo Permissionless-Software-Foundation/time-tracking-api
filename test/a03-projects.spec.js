@@ -128,6 +128,38 @@ describe('Projects', () => {
 
       assert.equal(result.body.success, true, 'success expected')
     })
+
+    it('should create project with all inputs', async () => {
+      // console.log(`adminJWT: ${context.adminJWT}`)
+
+      const options = {
+        method: 'POST',
+        uri: `${LOCALHOST}/projects`,
+        resolveWithFullResponse: true,
+        json: true,
+        body: {
+          project: {
+            title: 'test project',
+            projectLead: 'projectLead',
+            briefContent: 'briefContent',
+            extendedContent: 'extendedContent',
+            projectContact: 'projectContact',
+            contributors: ['id1', 'id2'],
+            projectWork: ['id3', 'id4'],
+            typesOfWork: ['type1', 'type2']
+          }
+        },
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${context.adminJWT}`
+        }
+      }
+
+      let result = await rp(options)
+      // console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+
+      assert.equal(result.body.success, true, 'success expected')
+    })
   })
   /*
   describe('GET /users', () => {
