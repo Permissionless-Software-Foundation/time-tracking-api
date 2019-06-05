@@ -161,13 +161,13 @@ describe('Projects', () => {
       assert.equal(result.body.success, true, 'success expected')
     })
   })
-  /*
-  describe('GET /users', () => {
-    it('should not fetch users if the authorization header is missing', async () => {
+
+  describe('GET /projects', () => {
+    it('should not fetch projects if the authorization header is missing', async () => {
       try {
         const options = {
           method: 'GET',
-          uri: `${LOCALHOST}/users`,
+          uri: `${LOCALHOST}/projects`,
           resolveWithFullResponse: true,
           json: true,
           headers: {
@@ -183,11 +183,11 @@ describe('Projects', () => {
       }
     })
 
-    it('should not fetch users if the authorization header is missing the scheme', async () => {
+    it('should not fetch projects if the authorization header is missing the scheme', async () => {
       try {
         const options = {
           method: 'GET',
-          uri: `${LOCALHOST}/users`,
+          uri: `${LOCALHOST}/projects`,
           resolveWithFullResponse: true,
           json: true,
           headers: {
@@ -203,12 +203,12 @@ describe('Projects', () => {
       }
     })
 
-    it('should not fetch users if the authorization header has invalid scheme', async () => {
+    it('should not fetch projects if the authorization header has invalid scheme', async () => {
       const { token } = context
       try {
         const options = {
           method: 'GET',
-          uri: `${LOCALHOST}/users`,
+          uri: `${LOCALHOST}/projects`,
           resolveWithFullResponse: true,
           json: true,
           headers: {
@@ -224,11 +224,11 @@ describe('Projects', () => {
       }
     })
 
-    it('should not fetch users if token is invalid', async () => {
+    it('should not fetch projects if token is invalid', async () => {
       try {
         const options = {
           method: 'GET',
-          uri: `${LOCALHOST}/users`,
+          uri: `${LOCALHOST}/projects`,
           resolveWithFullResponse: true,
           json: true,
           headers: {
@@ -244,12 +244,12 @@ describe('Projects', () => {
       }
     })
 
-    it('should fetch all users', async () => {
-      const { token } = context
+    it('should fetch all projects', async () => {
+      const token = context.testUser.token
 
       const options = {
         method: 'GET',
-        uri: `${LOCALHOST}/users`,
+        uri: `${LOCALHOST}/projects`,
         resolveWithFullResponse: true,
         json: true,
         headers: {
@@ -259,14 +259,19 @@ describe('Projects', () => {
       }
 
       const result = await rp(options)
-      const users = result.body.users
-      // console.log(`users: ${util.inspect(users)}`)
+      const projects = result.body.projects
+      // console.log(`projects: ${util.inspect(projects)}`)
 
-      assert.hasAnyKeys(users[0], ['type', '_id', 'username'])
-      assert.isNumber(users.length)
+      assert.isArray(projects)
+      assert.hasAnyKeys(projects[0], [
+        '_id',
+        'title',
+        'projectWork',
+        'typesOfWork'
+      ])
     })
   })
-
+  /*
   describe('GET /users/:id', () => {
     it('should not fetch user if token is invalid', async () => {
       try {

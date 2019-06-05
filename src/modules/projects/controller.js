@@ -52,8 +52,7 @@ async function createProject (ctx) {
 
 /**
  * @api {get} /projects Get all projects
- * @apiPermission project
- * @apiVersion 1.0.0
+ * @apiPermission user
  * @apiName GetProjects
  * @apiGroup Projects
  *
