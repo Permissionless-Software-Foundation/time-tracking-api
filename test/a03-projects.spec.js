@@ -128,14 +128,46 @@ describe('Projects', () => {
 
       assert.equal(result.body.success, true, 'success expected')
     })
+
+    it('should create project with all inputs', async () => {
+      // console.log(`adminJWT: ${context.adminJWT}`)
+
+      const options = {
+        method: 'POST',
+        uri: `${LOCALHOST}/projects`,
+        resolveWithFullResponse: true,
+        json: true,
+        body: {
+          project: {
+            title: 'test project',
+            projectLead: 'projectLead',
+            briefContent: 'briefContent',
+            extendedContent: 'extendedContent',
+            projectContact: 'projectContact',
+            contributors: ['id1', 'id2'],
+            projectWork: ['id3', 'id4'],
+            typesOfWork: ['type1', 'type2']
+          }
+        },
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${context.adminJWT}`
+        }
+      }
+
+      let result = await rp(options)
+      // console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
+
+      assert.equal(result.body.success, true, 'success expected')
+    })
   })
-  /*
-  describe('GET /users', () => {
-    it('should not fetch users if the authorization header is missing', async () => {
+
+  describe('GET /projects', () => {
+    it('should not fetch projects if the authorization header is missing', async () => {
       try {
         const options = {
           method: 'GET',
-          uri: `${LOCALHOST}/users`,
+          uri: `${LOCALHOST}/projects`,
           resolveWithFullResponse: true,
           json: true,
           headers: {
@@ -151,11 +183,11 @@ describe('Projects', () => {
       }
     })
 
-    it('should not fetch users if the authorization header is missing the scheme', async () => {
+    it('should not fetch projects if the authorization header is missing the scheme', async () => {
       try {
         const options = {
           method: 'GET',
-          uri: `${LOCALHOST}/users`,
+          uri: `${LOCALHOST}/projects`,
           resolveWithFullResponse: true,
           json: true,
           headers: {
@@ -171,12 +203,12 @@ describe('Projects', () => {
       }
     })
 
-    it('should not fetch users if the authorization header has invalid scheme', async () => {
+    it('should not fetch projects if the authorization header has invalid scheme', async () => {
       const { token } = context
       try {
         const options = {
           method: 'GET',
-          uri: `${LOCALHOST}/users`,
+          uri: `${LOCALHOST}/projects`,
           resolveWithFullResponse: true,
           json: true,
           headers: {
@@ -192,11 +224,11 @@ describe('Projects', () => {
       }
     })
 
-    it('should not fetch users if token is invalid', async () => {
+    it('should not fetch projects if token is invalid', async () => {
       try {
         const options = {
           method: 'GET',
-          uri: `${LOCALHOST}/users`,
+          uri: `${LOCALHOST}/projects`,
           resolveWithFullResponse: true,
           json: true,
           headers: {
@@ -212,12 +244,12 @@ describe('Projects', () => {
       }
     })
 
-    it('should fetch all users', async () => {
-      const { token } = context
+    it('should fetch all projects', async () => {
+      const token = context.testUser.token
 
       const options = {
         method: 'GET',
-        uri: `${LOCALHOST}/users`,
+        uri: `${LOCALHOST}/projects`,
         resolveWithFullResponse: true,
         json: true,
         headers: {
@@ -227,20 +259,27 @@ describe('Projects', () => {
       }
 
       const result = await rp(options)
-      const users = result.body.users
-      // console.log(`users: ${util.inspect(users)}`)
+      const projects = result.body.projects
+      // console.log(`projects: ${util.inspect(projects)}`)
 
-      assert.hasAnyKeys(users[0], ['type', '_id', 'username'])
-      assert.isNumber(users.length)
+      context.projectId = projects[1]._id
+
+      assert.isArray(projects)
+      assert.hasAnyKeys(projects[0], [
+        '_id',
+        'title',
+        'projectWork',
+        'typesOfWork'
+      ])
     })
   })
 
-  describe('GET /users/:id', () => {
-    it('should not fetch user if token is invalid', async () => {
+  describe('GET /projects/:id', () => {
+    it('should not fetch projects if token is invalid', async () => {
       try {
         const options = {
           method: 'GET',
-          uri: `${LOCALHOST}/users/1`,
+          uri: `${LOCALHOST}/projects/1`,
           resolveWithFullResponse: true,
           json: true,
           headers: {
@@ -256,13 +295,13 @@ describe('Projects', () => {
       }
     })
 
-    it("should throw 404 if user doesn't exist", async () => {
-      const { token } = context
+    it("should throw 404 if projects doesn't exist", async () => {
+      const token = context.testUser.token
 
       try {
         const options = {
           method: 'GET',
-          uri: `${LOCALHOST}/users/1`,
+          uri: `${LOCALHOST}/projects/1`,
           resolveWithFullResponse: true,
           json: true,
           headers: {
@@ -278,15 +317,13 @@ describe('Projects', () => {
       }
     })
 
-    it('should fetch user', async () => {
-      const {
-        user: { _id },
-        token
-      } = context
+    it('should fetch projects', async () => {
+      const token = context.testUser.token
+      const id = context.projectId
 
       const options = {
         method: 'GET',
-        uri: `${LOCALHOST}/users/${_id}`,
+        uri: `${LOCALHOST}/projects/${id}`,
         resolveWithFullResponse: true,
         json: true,
         headers: {
@@ -296,25 +333,20 @@ describe('Projects', () => {
       }
 
       const result = await rp(options)
-      const user = result.body.user
-      // console.log(`user: ${util.inspect(user)}`)
+      const project = result.body.project
+      // console.log(`project: ${util.inspect(project)}`)
 
-      assert.hasAnyKeys(user, ['type', '_id', 'username'])
-      assert.equal(user._id, _id)
-      assert.notProperty(
-        user,
-        'password',
-        'Password property should not be returned'
-      )
+      assert.hasAnyKeys(project, ['_id', 'title'])
+      assert.equal(project._id, id)
     })
   })
 
-  describe('PUT /users/:id', () => {
-    it('should not update user if token is invalid', async () => {
+  describe('PUT /projects/:id', () => {
+    it('should not update projects if token is invalid', async () => {
       try {
         const options = {
           method: 'PUT',
-          uri: `${LOCALHOST}/users/1`,
+          uri: `${LOCALHOST}/projects/1`,
           resolveWithFullResponse: true,
           json: true,
           headers: {
@@ -330,13 +362,13 @@ describe('Projects', () => {
       }
     })
 
-    it('should throw 401 if non-admin updating other user', async () => {
-      const { token } = context
+    it('should throw 401 if non-admin updating projects', async () => {
+      const token = context.testUser.token
 
       try {
         const options = {
           method: 'PUT',
-          uri: `${LOCALHOST}/users/1`,
+          uri: `${LOCALHOST}/projects/1`,
           resolveWithFullResponse: true,
           json: true,
           headers: {
@@ -352,15 +384,13 @@ describe('Projects', () => {
       }
     })
 
-    it('should update user', async () => {
-      const {
-        user: { _id },
-        token
-      } = context
+    it('should update projects', async () => {
+      const token = context.adminJWT
+      const id = context.projectId
 
       const options = {
         method: 'PUT',
-        uri: `${LOCALHOST}/users/${_id}`,
+        uri: `${LOCALHOST}/projects/${id}`,
         resolveWithFullResponse: true,
         json: true,
         headers: {
@@ -368,94 +398,26 @@ describe('Projects', () => {
           Authorization: `Bearer ${token}`
         },
         body: {
-          user: { username: 'updatedcoolname' }
+          project: { title: 'cool project' }
         }
       }
 
       const result = await rp(options)
-      const user = result.body.user
-      // console.log(`user: ${util.inspect(user)}`)
+      const project = result.body.project
+      // console.log(`project: ${util.inspect(project)}`)
 
-      assert.hasAnyKeys(user, ['type', '_id', 'username'])
-      assert.equal(user._id, _id)
-      assert.notProperty(
-        user,
-        'password',
-        'Password property should not be returned'
-      )
-      assert.equal(user.username, 'updatedcoolname')
-    })
-
-    it('should not be able to update user type', async () => {
-      try {
-        const options = {
-          method: 'PUT',
-          uri: `${LOCALHOST}/users/${context.user._id.toString()}`,
-          resolveWithFullResponse: true,
-          json: true,
-          headers: {
-            Authorization: `Bearer ${context.token}`
-          },
-          body: {
-            user: {
-              name: 'new name',
-              type: 'test'
-            }
-          }
-        }
-
-        let result = await rp(options)
-
-        // console.log(`Users: ${JSON.stringify(result, null, 2)}`)
-
-        assert(result.statusCode === 200, 'Status Code 200 expected.')
-        assert(result.body.user.type === 'user', 'Type should be unchanged.')
-      } catch (err) {
-        console.error('Error: ', err)
-        console.log('Error stringified: ' + JSON.stringify(err, null, 2))
-        throw err
-      }
-    })
-
-    it('should not be able to update other user', async () => {
-      try {
-        const options = {
-          method: 'PUT',
-          uri: `${LOCALHOST}/users/${context.user2._id.toString()}`,
-          resolveWithFullResponse: true,
-          json: true,
-          headers: {
-            Authorization: `Bearer ${context.token}`
-          },
-          body: {
-            user: {
-              name: 'This should not work'
-            }
-          }
-        }
-
-        let result = await rp(options)
-
-        console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
-        assert(false, 'Unexpected result')
-      } catch (err) {
-        if (err.statusCode === 401) {
-          assert(err.statusCode === 401, 'Error code 401 expected.')
-        } else {
-          console.error('Error: ', err)
-          console.log('Error stringified: ' + JSON.stringify(err, null, 2))
-          throw err
-        }
-      }
+      assert.hasAnyKeys(project, ['_id', 'title'])
+      assert.equal(project._id, id)
+      assert.equal(project.title, 'cool project')
     })
   })
 
-  describe('DELETE /users/:id', () => {
-    it('should not delete user if token is invalid', async () => {
+  describe('DELETE /projects/:id', () => {
+    it('should not delete projects if token is invalid', async () => {
       try {
         const options = {
           method: 'DELETE',
-          uri: `${LOCALHOST}/users/1`,
+          uri: `${LOCALHOST}/projects/1`,
           resolveWithFullResponse: true,
           json: true,
           headers: {
@@ -471,37 +433,18 @@ describe('Projects', () => {
       }
     })
 
-    it('should throw 401 if deleting other user', async () => {
-      const { token } = context
-
+    it('should not be able to delete projects unless admin', async () => {
       try {
+        const token = context.testUser.token
+        const id = context.projectId
+
         const options = {
           method: 'DELETE',
-          uri: `${LOCALHOST}/users/1`,
+          uri: `${LOCALHOST}/projects/${id}`,
           resolveWithFullResponse: true,
           json: true,
           headers: {
-            Accept: 'application/json',
             Authorization: `Bearer ${token}`
-          }
-        }
-
-        await rp(options)
-        assert.equal(true, false, 'Unexpected behavior')
-      } catch (err) {
-        assert.equal(err.statusCode, 401)
-      }
-    })
-
-    it('should not be able to delete other users unless admin', async () => {
-      try {
-        const options = {
-          method: 'DELETE',
-          uri: `${LOCALHOST}/users/${context.user2._id.toString()}`,
-          resolveWithFullResponse: true,
-          json: true,
-          headers: {
-            Authorization: `Bearer ${context.token}`
           }
         }
 
@@ -520,15 +463,13 @@ describe('Projects', () => {
       }
     })
 
-    it('should delete user', async () => {
-      const {
-        user: { _id },
-        token
-      } = context
+    it('should delete projects for admin', async () => {
+      const token = context.adminJWT
+      const id = context.projectId
 
       const options = {
         method: 'DELETE',
-        uri: `${LOCALHOST}/users/${_id}`,
+        uri: `${LOCALHOST}/projects/${id}`,
         resolveWithFullResponse: true,
         json: true,
         headers: {
@@ -538,10 +479,9 @@ describe('Projects', () => {
       }
 
       const result = await rp(options)
-      // console.log(`result: ${util.inspect(result.body)}`)
+      console.log(`result: ${util.inspect(result.body)}`)
 
       assert.equal(result.body.success, true)
     })
   })
-  */
 })

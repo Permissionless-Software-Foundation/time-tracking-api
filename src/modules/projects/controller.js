@@ -2,17 +2,22 @@ const Project = require('../../models/projects')
 
 /**
  * @api {post} /projects Create a new project
- * @apiPermission
- * @apiVersion 1.0.0
+ * @apiPermission admin
  * @apiName CreateProject
  * @apiGroup Projects
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X POST -d '{ "project": { "projectname": "johndoe", "password": "secretpasas" } }' localhost:50011/projects
+ * curl -H "Content-Type: application/json" -H "Authorization: Bearer <JWT Token>" -X POST -d '{ "project": { "title": "test project" } }' localhost:5001/projects
  *
  * @apiParam {Object} project Project object (required)
  * @apiParam {String} project.title Project title (required).
- * @apiParam {String} project.projectLead GUID of user assigned as project leader.
+ * @apiParam {String} project.projectLead (optional) GUID of user assigned as project leader.
+ * @apiParam {String} project.briefContent (optional) Summary.
+ * @apiParam {String} project.extendedContent (optional) Description.
+ * @apiParam {String} project.projectContact (optional) Primary contact for project.
+ * @apiParam {Array} project.contributors (optional) GUID of users contributing to this project.
+ * @apiParam {Array} project.projectWork (optional) GUID of work entries associated with this project.
+ * @apiParam {Array} project.typesOfWork (optional) GUID of work types associated with this project.
  *
  * @apiSuccess {Boolean}  success Project creation status.
  *
@@ -28,7 +33,7 @@ const Project = require('../../models/projects')
  *     HTTP/1.1 422 Unprocessable Entity
  *     {
  *       "status": 422,
- *       "error": "Unprocessable Entity"
+ *       "error": "Path `title` is required"
  *     }
  */
 async function createProject (ctx) {
@@ -47,27 +52,38 @@ async function createProject (ctx) {
 
 /**
  * @api {get} /projects Get all projects
- * @apiPermission project
- * @apiVersion 1.0.0
+ * @apiPermission user
  * @apiName GetProjects
  * @apiGroup Projects
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X GET localhost:5001/projects
+ * curl -H "Content-Type: application/json" -H "Authorization: Bearer <JWT Token>" -X GET localhost:5001/projects
  *
- * @apiSuccess {Object[]} projects           Array of project objects
- * @apiSuccess {ObjectId} projects._id       Project id
- * @apiSuccess {String}   project.type       Project type (admin or project)
- * @apiSuccess {String}   projects.name      Project name
- * @apiSuccess {String}   projects.projectname  Project projectname
+ * @apiSuccess {Object[]} projects                Array of project objects
+ * @apiSuccess {ObjectId} projects._id            Project id
+ * @apiSuccess {String}   project.title           Project title
+ * @apiSuccess {String}   project.projectLead     Project owner
+ * @apiSuccess {String}   project.briefContent    Project summary
+ * @apiSuccess {String}   project.extendedContent Project description
+ * @apiSuccess {String}   project.projectContact  Primary project contact
+ * @apiSuccess {Array}    project.contributors    Array of contributors to project
+ * @apiSuccess {Array}    project.projectWork     Entries of work associated with this project
+ * @apiSuccess {Array}    project.typesOfWork     Categories of work associated with this project
+ *
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
  *       "projects": [{
- *          "_id": "56bd1da600a526986cf65c80"
- *          "name": "John Doe"
- *          "projectname": "johndoe"
+ *        "_id": "5cf822da19965c5c3c48fc2a",
+ *        "title": "test project",
+ *        "projectLead": "projectLead",
+ *        "briefContent": "briefContent",
+ *        "extendedContent": "extendedContent",
+ *        "projectContact": "projectContact",
+ *        "contributors": [Array],
+ *        "projectWork": [Array],
+ *        "typesOfWork": [Array],
  *       }]
  *     }
  *
@@ -80,27 +96,37 @@ async function getProjects (ctx) {
 
 /**
  * @api {get} /projects/:id Get project by id
- * @apiPermission project
- * @apiVersion 1.0.0
+ * @apiPermission user
  * @apiName GetProject
  * @apiGroup Projects
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X GET localhost:5001/projects/56bd1da600a526986cf65c80
+ * curl -H "Content-Type: application/json" -H "Authorization: Bearer <JWT Token>" -X GET localhost:5001/projects/56bd1da600a526986cf65c80
  *
- * @apiSuccess {Object}   projects           Project object
- * @apiSuccess {ObjectId} projects._id       Project id
- * @apiSuccess {String}   project.type       Project type (admin or project)
- * @apiSuccess {String}   projects.name      Project name
- * @apiSuccess {String}   projects.projectname  Project projectname
+ * @apiSuccess {Object}   projects                Project object
+ * @apiSuccess {String}   project.title           Project title
+ * @apiSuccess {String}   project.projectLead     Project owner
+ * @apiSuccess {String}   project.briefContent    Project summary
+ * @apiSuccess {String}   project.extendedContent Project description
+ * @apiSuccess {String}   project.projectContact  Primary project contact
+ * @apiSuccess {Array}    project.contributors    Array of contributors to project
+ * @apiSuccess {Array}    project.projectWork     Entries of work associated with this project
+ * @apiSuccess {Array}    project.typesOfWork     Categories of work associated with this project
+ *
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
  *       "project": {
- *          "_id": "56bd1da600a526986cf65c80"
- *          "name": "John Doe"
- *          "projectname": "johndoe"
+ *          "_id": "5cf822da19965c5c3c48fc2a",
+ *          "title": "test project",
+ *          "projectLead": "projectLead",
+ *          "briefContent": "briefContent",
+ *          "extendedContent": "extendedContent",
+ *          "projectContact": "projectContact",
+ *          "contributors": [Array],
+ *          "projectWork": [Array],
+ *          "typesOfWork": [Array],
  *       }
  *     }
  *
@@ -131,31 +157,48 @@ async function getProject (ctx, next) {
 
 /**
  * @api {put} /projects/:id Update a project
- * @apiPermission
- * @apiVersion 1.0.0
+ * @apiPermission admin
  * @apiName UpdateProject
  * @apiGroup Projects
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X PUT -d '{ "project": { "name": "Cool new Name" } }' localhost:5001/projects/56bd1da600a526986cf65c80
+ * curl -H "Content-Type: application/json" -H "Authorization: Bearer <JWT Token>" -X PUT -d '{ "project": { "title": "Cool new Name" } }' localhost:5001/projects/56bd1da600a526986cf65c80
  *
- * @apiParam {Object} project          Project object (required)
- * @apiParam {String} project.name     Name.
- * @apiParam {String} project.projectname Projectname.
+ * @apiParam {Object} project                 Project object (required)
+ * @apiParam {String} project.title           Project title
+ * @apiParam {String} project.projectLead     GUID of user assigned as project leader.
+ * @apiParam {String} project.briefContent    Summary.
+ * @apiParam {String} project.extendedContent Description.
+ * @apiParam {String} project.projectContact  Primary contact for project.
+ * @apiParam {Array} project.contributors     GUID of users contributing to this project.
+ * @apiParam {Array} project.projectWork      GUID of work entries associated with this project.
+ * @apiParam {Array} project.typesOfWork      GUID of work types associated with this project.
  *
- * @apiSuccess {Object}   projects           Project object
- * @apiSuccess {ObjectId} projects._id       Project id
- * @apiSuccess {String}   project.type      Project type (admin or project)
- * @apiSuccess {String}   projects.name      Updated name
- * @apiSuccess {String}   projects.projectname  Updated projectname
+ *
+ * @apiSuccess {Object}   projects                Project object
+ * @apiSuccess {ObjectId} projects._id            Project id
+ * @apiSuccess {String}   project.title           Project title
+ * @apiSuccess {String}   project.projectLead     Project owner
+ * @apiSuccess {String}   project.briefContent    Project summary
+ * @apiSuccess {String}   project.extendedContent Project description
+ * @apiSuccess {String}   project.projectContact  Primary project contact
+ * @apiSuccess {Array}    project.contributors    Array of contributors to project
+ * @apiSuccess {Array}    project.projectWork     Entries of work associated with this project
+ * @apiSuccess {Array}    project.typesOfWork     Categories of work associated with this project
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
  *       "project": {
  *          "_id": "56bd1da600a526986cf65c80"
- *          "name": "Cool new name"
- *          "projectname": "johndoe"
+ *          "title": "test project",
+ *          "projectLead": "projectLead",
+ *          "briefContent": "briefContent",
+ *          "extendedContent": "extendedContent",
+ *          "projectContact": "projectContact",
+ *          "contributors": [Array],
+ *          "projectWork": [Array],
+ *          "typesOfWork": [Array],
  *       }
  *     }
  *
@@ -175,14 +218,9 @@ async function updateProject (ctx) {
 
   Object.assign(project, ctx.request.body.project)
 
-  console.log(`Current user: ${JSON.stringify(ctx.state.user, null, 2)}`)
+  // console.log(`Current user: ${JSON.stringify(ctx.state.user, null, 2)}`)
 
-  // Unless the calling project is an admin, they can not change the project type.
-  // if (projectType !== 'admin') {
-  //  project.type = projectType
-  // }
-
-  // await project.save()
+  await project.save()
 
   ctx.body = {
     project
@@ -191,13 +229,12 @@ async function updateProject (ctx) {
 
 /**
  * @api {delete} /projects/:id Delete a project
- * @apiPermission
- * @apiVersion 1.0.0
+ * @apiPermission admin
  * @apiName DeleteProject
  * @apiGroup Projects
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -X DELETE localhost:5001/projects/56bd1da600a526986cf65c80
+ * curl -H "Content-Type: application/json" -H "Authorization: Bearer <JWT Token>" -X DELETE localhost:5001/projects/56bd1da600a526986cf65c80
  *
  * @apiSuccess {StatusCode} 200
  *
