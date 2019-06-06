@@ -260,7 +260,7 @@ describe('Projects', () => {
 
       const result = await rp(options)
       const projects = result.body.projects
-      // console.log(`projects: ${util.inspect(projects)}`)
+      console.log(`projects: ${util.inspect(projects)}`)
 
       assert.isArray(projects)
       assert.hasAnyKeys(projects[0], [
