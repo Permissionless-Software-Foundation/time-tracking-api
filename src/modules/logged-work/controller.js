@@ -1,6 +1,4 @@
-
 const LoggedWork = require('../../models/logged-work')
-
 
 /**
  * @api {post} /loggedwork Create a new LoggedWork
@@ -15,9 +13,9 @@ const LoggedWork = require('../../models/logged-work')
  * @apiSuccess {ObjectId} loggedWork._id            LoggeWork id
  * @apiSuccess {String}   loggedWork.user           LoggeWork user
  * @apiSuccess {String}   loggedWork.typeOfWork     LoggeWork type
- * @apiSuccess {String}   loggedWork.project        Project 
+ * @apiSuccess {String}   loggedWork.project        Project
  * @apiSuccess {Date}   loggedWork.startTime      LoggedWork Start Time
- * @apiSuccess {Date}   loggedWork.endTime        LoggedWork End Time 
+ * @apiSuccess {Date}   loggedWork.endTime        LoggedWork End Time
  * @apiSuccess {String}   loggedWork.details        LoggedWork Details
  * @apiSuccess {Number}   loggedWork.hours          LoggedWork Hours
  *
@@ -39,8 +37,7 @@ const LoggedWork = require('../../models/logged-work')
  *     }
  */
 async function createLoggedWork (ctx) {
-  const loggedWork =   new LoggedWork(ctx.request.body.loggedWork) ;
-
+  const loggedWork = new LoggedWork(ctx.request.body.loggedWork)
 
   try {
     await loggedWork.save()
@@ -49,12 +46,12 @@ async function createLoggedWork (ctx) {
   }
 
   ctx.body = {
-    success: true,
-    
+    success: true
   }
 }
 /**
  * @api {get} /loggedwork Get all loggedworks
+ * @apiPermission public
  * @apiName GetLoggedWorks
  * @apiGroup LoggedWork
  *
@@ -65,9 +62,9 @@ async function createLoggedWork (ctx) {
  * @apiSuccess {ObjectId} loggedWork._id            LoggeWork id
  * @apiSuccess {String}   loggedWork.user           LoggeWork user
  * @apiSuccess {String}   loggedWork.typeOfWork     LoggeWork type
- * @apiSuccess {String}   loggedWork.project        Project 
+ * @apiSuccess {String}   loggedWork.project        Project
  * @apiSuccess {Date}   loggedWork.startTime      LoggedWork Start Time
- * @apiSuccess {Date}   loggedWork.endTime        LoggedWork End Time 
+ * @apiSuccess {Date}   loggedWork.endTime        LoggedWork End Time
  * @apiSuccess {String}   loggedWork.details        LoggedWork Details
  * @apiSuccess {Number}   loggedWork.hours          LoggedWork Hours
  *
@@ -84,17 +81,16 @@ async function createLoggedWork (ctx) {
  *        "endTime": Date,
  *        "details": "details",
  *        "hours": 5,
- *      
+ *
  *       }]
  *     }
  *
- * 
+ *
  */
 async function getLoggedWorks (ctx) {
   const loggedWork = await LoggedWork.find({})
   ctx.body = { loggedWork }
 }
-
 
 /**
  * @api {get} /loggedwork/:id Get  loggedwork by ID
@@ -108,9 +104,9 @@ async function getLoggedWorks (ctx) {
  * @apiSuccess {ObjectId} loggedWork._id            LoggeWork id
  * @apiSuccess {String}   loggedWork.user           LoggeWork user
  * @apiSuccess {String}   loggedWork.typeOfWork     LoggeWork type
- * @apiSuccess {String}   loggedWork.project        Project 
+ * @apiSuccess {String}   loggedWork.project        Project
  * @apiSuccess {Date}   loggedWork.startTime      LoggedWork Start Time
- * @apiSuccess {Date}   loggedWork.endTime        LoggedWork End Time 
+ * @apiSuccess {Date}   loggedWork.endTime        LoggedWork End Time
  * @apiSuccess {String}   loggedWork.details        LoggedWork Details
  * @apiSuccess {Number}   loggedWork.hours          LoggedWork Hours
  *
@@ -126,23 +122,22 @@ async function getLoggedWorks (ctx) {
  *        "endTime": Date,
  *        "details": "details",
  *        "hours": 5,
- *      
+ *
  *       }]
  *     }
  *
- * 
+ *
  */
- 
+
 async function getLoggedWork (ctx, next) {
   try {
-    
     const loggedWork = await LoggedWork.findById(ctx.params.id)
     if (!loggedWork) {
       ctx.throw(404)
     }
 
     ctx.body = {
-        loggedWork
+      loggedWork
     }
   } catch (err) {
     if (err === 404 || err.name === 'CastError') {
@@ -152,11 +147,10 @@ async function getLoggedWork (ctx, next) {
     ctx.throw(500)
   }
 
-  if (next) { return next() }
+  if (next) {
+    return next()
+  }
 }
-
-
-
 
 /**
  * @api {put} /loggedwork/:id Update a LoggedWork
@@ -171,9 +165,9 @@ async function getLoggedWork (ctx, next) {
  * @apiSuccess {ObjectId} loggedWork._id            LoggeWork id
  * @apiSuccess {String}   loggedWork.user           LoggeWork user
  * @apiSuccess {String}   loggedWork.typeOfWork     LoggeWork type
- * @apiSuccess {String}   loggedWork.project        Project 
+ * @apiSuccess {String}   loggedWork.project        Project
  * @apiSuccess {Date}   loggedWork.startTime      LoggedWork Start Time
- * @apiSuccess {Date}   loggedWork.endTime        LoggedWork End Time 
+ * @apiSuccess {Date}   loggedWork.endTime        LoggedWork End Time
  * @apiSuccess {String}   loggedWork.details        LoggedWork Details
  * @apiSuccess {Number}   loggedWork.hours          LoggedWork Hours
  *
@@ -190,11 +184,11 @@ async function getLoggedWork (ctx, next) {
  *        "endTime": Date,
  *        "details": "details",
  *        "hours": 5,
- *      
+ *
  *       }]
  *     }
  *
- * 
+ *
  *
  * @apiError UnprocessableEntity Missing required parameters
  *
@@ -208,8 +202,8 @@ async function getLoggedWork (ctx, next) {
  * @apiUse TokenError
  */
 async function updateLoggedWork (ctx) {
-   const loggedWork = ctx.body.loggedWork
-   Object.assign(loggedWork, ctx.request.body.loggedWork);
+  const loggedWork = ctx.body.loggedWork
+  Object.assign(loggedWork, ctx.request.body.loggedWork)
 
   await loggedWork.save()
 
@@ -217,7 +211,6 @@ async function updateLoggedWork (ctx) {
     loggedWork
   }
 }
-
 
 /**
  * @api {delete} /loggedwork/:id Delete a LoggedWork
@@ -240,8 +233,7 @@ async function updateLoggedWork (ctx) {
  */
 
 async function deleteLoggedWork (ctx) {
- 
-  const loggedWork = ctx.body.loggedWork;
+  const loggedWork = ctx.body.loggedWork
 
   await loggedWork.remove()
 
@@ -252,9 +244,9 @@ async function deleteLoggedWork (ctx) {
 }
 
 module.exports = {
-    createLoggedWork,
-    getLoggedWorks,
-    getLoggedWork,
-    updateLoggedWork,
-    deleteLoggedWork
+  createLoggedWork,
+  getLoggedWorks,
+  getLoggedWork,
+  updateLoggedWork,
+  deleteLoggedWork
 }
