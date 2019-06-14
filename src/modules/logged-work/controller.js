@@ -49,7 +49,7 @@ async function createLoggedWork (ctx) {
   }
 
   ctx.body = {
-    loggedWork: true,
+    success: true,
     
   }
 }
