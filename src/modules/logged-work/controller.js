@@ -94,6 +94,7 @@ async function getLoggedWorks (ctx) {
 
 /**
  * @api {get} /loggedwork/:id Get  loggedwork by ID
+ * @apiPermission public
  * @apiName GetLoggedWork
  * @apiGroup LoggedWork
  *
