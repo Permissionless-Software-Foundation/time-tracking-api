@@ -143,7 +143,9 @@ async function getUser (ctx, next) {
     ctx.throw(500)
   }
 
-  if (next) { return next() }
+  if (next) {
+    return next()
+  }
 }
 
 /**
