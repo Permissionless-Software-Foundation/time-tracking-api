@@ -1,7 +1,6 @@
 const validator = require('../../middleware/validators')
 const loggedWork = require('./controller')
 
-
 module.exports.baseUrl = '/loggedwork'
 
 module.exports.routes = [
@@ -9,8 +8,8 @@ module.exports.routes = [
     method: 'POST',
     route: '/',
     handlers: [
-        validator.ensureUser,
-        loggedWork.createLoggedWork
+      validator.ensureUser,
+      loggedWork.createLoggedWork
     ]
   },
   {

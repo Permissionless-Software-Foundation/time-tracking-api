@@ -3,7 +3,7 @@
   Select the user by editing the constant USERNAME below.
 */
 
-const USERNAME = 'test'
+const USERNAME = 'daniel'
 
 const mongoose = require('mongoose')
 
