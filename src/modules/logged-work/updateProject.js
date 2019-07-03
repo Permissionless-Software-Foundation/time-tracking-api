@@ -8,9 +8,9 @@ const LOCALHOST = `http://localhost:${config.port}`
 async function updateWorkAndContributor (ctx, logwork) {
   const log = await login()
   const userId = ctx.state.user._id
-  const project = ctx.request.body.project
   const token = log.body.token
 
+  const project = await getProject(ctx.request.body.loggedWork.project, token)
   const resp = await updateProject(project, userId, token, logwork._id)
 
   return resp
@@ -38,11 +38,30 @@ async function login () {
     //  console.log(`resultLogin: ${JSON.stringify(result, null, 2)}`)
     return result
   } catch (err) {
-    console.error(`Error in admin.js/loginAdmin().`)
     throw err
   }
 }
+async function getProject (projectId, token) {
+  if (!projectId || !token) {
+    return false
+  }
 
+  try {
+    let options = {
+      method: 'GET',
+      uri: `${LOCALHOST}/projects/${projectId}`,
+      resolveWithFullResponse: true,
+      json: true,
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+    const result = await rp(options)
+    return result.body.project
+  } catch (err) {
+    return false
+  }
+}
 async function updateProject (pro, idUser, token, idLogWork) {
   if (!pro || !idUser || !token || !idLogWork) {
     return false
@@ -52,7 +71,7 @@ async function updateProject (pro, idUser, token, idLogWork) {
 
   projectWorkList.push(idLogWork)
   const existId = await VerifyingExistingID(pro.contributors, idUser)
-  if (!existId) { contributorsList.push(idUser) } // If the UUID of the contributor doesn't exist we add it to the array
+  if (!existId) { contributorsList.push(idUser) } // If the UUID of the contributor doesn't exist we add it the array
 
   // try update
   try {
@@ -77,7 +96,6 @@ async function updateProject (pro, idUser, token, idLogWork) {
     //  console.log(`resultUpdate: ${JSON.stringify(result, null, 2)}`)
     return true
   } catch (err) {
-    console.error(`Error Update Project.`)
     return false
   }
 }

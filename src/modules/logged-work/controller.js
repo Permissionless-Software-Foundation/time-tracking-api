@@ -204,6 +204,8 @@ async function getLoggedWork (ctx, next) {
  */
 async function updateLoggedWork (ctx) {
   const loggedWork = ctx.body.loggedWork
+  console.log('user request: ' + ctx.state.user.username + ' userlog: ' + ctx.body.loggedWork.user)
+  if (ctx.body.loggedWork.user !== ctx.state.user.username) { ctx.throw(422, { 'Error': 'User incorrect' }) }
   Object.assign(loggedWork, ctx.request.body.loggedWork)
 
   await loggedWork.save()
