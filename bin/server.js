@@ -62,7 +62,6 @@ async function startServer () {
   if (success) console.log(`System admin user created.`)
 
   console.log(`API docs available at http://localhost:5001/`)
-
   return app
 }
 // startServer()

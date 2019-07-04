@@ -19,15 +19,14 @@ describe('LoggedWork', () => {
     const testUser = await testUtils.loginTestUser(userObj)
 
     context.testUser = testUser
-
     // Get the admin JWT token.
     const adminJWT = await testUtils.getAdminJWT()
-     console.log(`adminJWT: ${adminJWT}`)
+    console.log(`adminJWT: ${adminJWT}`)
     context.adminJWT = adminJWT
   })
 
   describe('POST - Create LoggedWork', () => {
-    it('should reject loggedwork creation if no JWT provided',async () => {
+    it('should reject loggedwork creation if no JWT provided', async () => {
       try {
         const options = {
           method: 'POST',
@@ -74,7 +73,7 @@ describe('LoggedWork', () => {
         // console.log(`err: ${JSON.stringify(err, null, 2)}`)
 
         assert.equal(err.statusCode, 422)
-        assert.include(err.message,"Path `project` is required., user: Path `user` is required.")
+        assert.include(err.message, "Path `project` is required., user: Path `user` is required.")
       }
     })
     it('should reject without project value', async () => {
@@ -86,8 +85,9 @@ describe('LoggedWork', () => {
           json: true,
           body: {
             loggedWork: {
-            user: 'myUser'
-          }},
+              user: 'myUser'
+            }
+          },
           headers: {
             Accept: 'application/json',
             Authorization: `Bearer ${context.adminJWT}`
@@ -102,7 +102,7 @@ describe('LoggedWork', () => {
         // console.log(`err: ${JSON.stringify(err, null, 2)}`)
 
         assert.equal(err.statusCode, 422)
-        assert.include(err.message,"Path `project` is required.")
+        assert.include(err.message, "Path `project` is required.")
       }
     })
     it('should reject without user value', async () => {
@@ -114,8 +114,9 @@ describe('LoggedWork', () => {
           json: true,
           body: {
             loggedWork: {
-            project: 'myUser'
-          }},
+              project: 'myUser'
+            }
+          },
           headers: {
             Accept: 'application/json',
             Authorization: `Bearer ${context.adminJWT}`
@@ -130,7 +131,7 @@ describe('LoggedWork', () => {
         // console.log(`err: ${JSON.stringify(err, null, 2)}`)
 
         assert.equal(err.statusCode, 422)
-        assert.include(err.message,"Path `user` is required.")
+        assert.include(err.message, "Path `user` is required.")
       }
     })
     it('should create loggedwork for  user with minimum inputs', async () => {
@@ -143,8 +144,8 @@ describe('LoggedWork', () => {
         json: true,
         body: {
           loggedWork: {
-            user: 'user',
-            project:'project'
+            user: 'system',
+            project: 'project'
           }
         },
         headers: {
@@ -167,13 +168,13 @@ describe('LoggedWork', () => {
         resolveWithFullResponse: true,
         json: true,
         body: {
-          loggedWork:{
-            user:"Daniel",
-            typeOfWork:"REST API",
-            project:"myProject",
-            details:"details",
-            hours:9
-      }
+          loggedWork: {
+            user: "system",
+            typeOfWork: "REST API",
+            project: "myProject",
+            details: "details",
+            hours: 9
+          }
         },
         headers: {
           Accept: 'application/json',
@@ -256,7 +257,7 @@ describe('LoggedWork', () => {
       const loggedWork = result.body.loggedWork
       // console.log(`project: ${util.inspect(project)}`)
 
-      assert.hasAnyKeys(loggedWork, ['_id', 'user' , 'project'])
+      assert.hasAnyKeys(loggedWork, ['_id', 'user', 'project'])
       assert.equal(loggedWork._id, id)
     })
 
@@ -301,7 +302,7 @@ describe('LoggedWork', () => {
       assert.equal(loggedwork._id, id)
     })
 
-    
+
   })
   describe('PUT /loggedwork/:id', () => {
     it('should not update loggedwork if token is invalid', async () => {
@@ -325,7 +326,7 @@ describe('LoggedWork', () => {
     })
 
 
-    it('should update loggedwork', async () => {
+    it('should update loggedwork if user request === loggedwork.user', async () => {
       const token = context.adminJWT
       const id = context.loggedWorkId
 
@@ -339,7 +340,7 @@ describe('LoggedWork', () => {
           Authorization: `Bearer ${token}`
         },
         body: {
-          loggedWork: { user: 'Best user' , project: 'Awesome Project'}
+          loggedWork: { user: 'system', project: 'Awesome Project' }
         }
       }
 
@@ -347,12 +348,40 @@ describe('LoggedWork', () => {
       const loggedWork = result.body.loggedWork
       // console.log(`project: ${util.inspect(project)}`)
 
-      assert.hasAnyKeys(loggedWork, ['_id', 'user' , 'project'])
+      assert.hasAnyKeys(loggedWork, ['_id', 'user', 'project'])
       assert.equal(loggedWork._id, id)
-      assert.equal(loggedWork.user, 'Best user')
+      assert.equal(loggedWork.user, 'system')
       assert.equal(loggedWork.project, 'Awesome Project')
     })
+ 
+  it('should reject update loggedwork if user request != loggedwork.user', async () => {
+    const token = context.testUser.token
+    const id = context.loggedWorkId
+    try {
+      const options = {
+        method: 'PUT',
+        uri: `${LOCALHOST}/loggedwork/${id}`,
+        resolveWithFullResponse: true,
+        json: true,
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: {
+          loggedWork: { user: 'Best User', project: 'Awesome Project' }
+        }
+      }
+
+
+
+      await rp(options)
+      // assert.equal(true, false, 'Unexpected behavior')
+    } catch (err) {
+      assert.equal(err.statusCode, 422)
+    }
+
   })
+})
 
   describe('DELETE /loggedwork/:id', () => {
     it('should not delete loggedwork if token is invalid', async () => {
@@ -398,5 +427,5 @@ describe('LoggedWork', () => {
       assert.equal(result.body.success, true)
     })
   })
-  
+
 })
