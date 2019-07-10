@@ -1,7 +1,10 @@
 
 const LoggedWork = require('../../models/logged-work')
 const updateProject = require('./updateProject')
+const { Parser } = require('json2csv')
+var fields = [{ label: 'USER', value: 'user' }, { label: 'TYPE OF WORK', value: 'typeOfWork' }, { label: 'PROJECT', value: 'project' }, { label: 'START TIME', value: 'startTime' }, { label: 'END TIME', value: 'endTime' }, { label: 'DETAILS', value: 'details' }, { label: 'HOURS', value: 'hours' }]
 
+const opts = { fields }
 /**
  * @api {post} /loggedwork Create a new LoggedWork
  * @apiPermission user
@@ -245,11 +248,63 @@ async function deleteLoggedWork (ctx) {
     success: true
   }
 }
+/**
+ * @api {get} /loggedwork/csv Get all loggedworks to CSV File
+ * @apiName GetLoggedWorksCSV
+ * @apiGroup LoggedWork
+ *
+ * @apiExample Example usage:
+ * curl -H "Content-Type: application/json" -X GET localhost:5001/loggedwork/csv
+ *
+ *
+ *
+ */
+async function getLoggedWorksCSV (ctx) {
+  // query from get loggedwork
+  const loggedWork = await LoggedWork.find({}).populate({ path: 'project', select: 'title -_id' }).exec()
+  const myData = []
+  // set project title into project field
+  loggedWork.map(val => {
+    // parse data to user view
+    let aux = JSON.parse(JSON.stringify(val))
+    // eslint-disable-next-line camelcase
+    let start_time = aux.startTime && aux.startTime.toString() ? aux.startTime.toString() : ''
+    // eslint-disable-next-line camelcase
+    let end_time = aux.endTime && aux.endTime.toString() ? aux.endTime.toString() : ''
+    aux.startTime = start_time.slice(0, 10)
+    aux.endTime = end_time.slice(0, 10)
+    aux.project = aux.project.title
+    myData.push(aux)
+  })
+  // sort data from startTime
+  const csvData = myData.reverse().sort((a, b) => { // sort function
+    if (a.startTime < b.startTime) {
+      return 1
+    }
+    if (a.startTime > b.startTime) {
+      return -1
+    }
+    // a must be equal to b
+    return 0
+  })
+  // console.log(myData);
 
+  // create CSV file
+  try {
+    const parser = new Parser(opts)
+    const csv = parser.parse(csvData)
+    ctx.body = csv
+    ctx.response.attachment('LoggedWorks.csv')
+  } catch (err) {
+    console.error(err)
+    ctx.throw(500)
+  }
+}
 module.exports = {
   createLoggedWork,
   getLoggedWorks,
   getLoggedWork,
   updateLoggedWork,
-  deleteLoggedWork
+  deleteLoggedWork,
+  getLoggedWorksCSV
 }

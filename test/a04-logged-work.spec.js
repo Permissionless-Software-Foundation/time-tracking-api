@@ -36,18 +36,17 @@ describe('LoggedWork', () => {
           body: {
             loggedWork: {
               user: 'myUser',
-              project: 'myProject'
+              project: '56bd1da600a526986cf65c80'
             }
           }
         }
 
-        let result = await rp(options);
-        console.log(`result stringified: ${JSON.stringify(result, null, 2)}`);
+        let result = await rp(options)
+        console.log(`result stringified: ${JSON.stringify(result, null, 2)}`)
 
         assert(false, 'Unexpected result')
       } catch (err) {
-
-        assert(err.statusCode === 401, 'Error code 401 expected.');
+        assert(err.statusCode === 401, 'Error code 401 expected.')
       }
     })
 
@@ -73,7 +72,7 @@ describe('LoggedWork', () => {
         // console.log(`err: ${JSON.stringify(err, null, 2)}`)
 
         assert.equal(err.statusCode, 422)
-        assert.include(err.message, "Path `project` is required., user: Path `user` is required.")
+        assert.include(err.message, 'Path `project` is required., user: Path `user` is required.')
       }
     })
     it('should reject without project value', async () => {
@@ -102,7 +101,7 @@ describe('LoggedWork', () => {
         // console.log(`err: ${JSON.stringify(err, null, 2)}`)
 
         assert.equal(err.statusCode, 422)
-        assert.include(err.message, "Path `project` is required.")
+        assert.include(err.message, 'Path `project` is required.')
       }
     })
     it('should reject without user value', async () => {
@@ -131,7 +130,7 @@ describe('LoggedWork', () => {
         // console.log(`err: ${JSON.stringify(err, null, 2)}`)
 
         assert.equal(err.statusCode, 422)
-        assert.include(err.message, "Path `user` is required.")
+        assert.include(err.message, 'Path `user` is required.')
       }
     })
     it('should create loggedwork for  user with minimum inputs', async () => {
@@ -145,7 +144,7 @@ describe('LoggedWork', () => {
         body: {
           loggedWork: {
             user: 'system',
-            project: 'project'
+            project: '56bd1da600a526986cf65c80'
           }
         },
         headers: {
@@ -169,10 +168,10 @@ describe('LoggedWork', () => {
         json: true,
         body: {
           loggedWork: {
-            user: "system",
-            typeOfWork: "REST API",
-            project: "myProject",
-            details: "details",
+            user: 'system',
+            typeOfWork: 'REST API',
+            project: '56bd1da600a526986cf65c80',
+            details: 'details',
             hours: 9
           }
         },
@@ -187,18 +186,16 @@ describe('LoggedWork', () => {
 
       assert.equal(result.body.success, true, 'success expected')
     })
-
   })
   describe('GET /loggedwork', () => {
     it('should fetch all loggedworks', async () => {
-
       const options = {
         method: 'GET',
         uri: `${LOCALHOST}/loggedwork`,
         resolveWithFullResponse: true,
         json: true,
         headers: {
-          Accept: 'application/json',
+          Accept: 'application/json'
         }
       }
 
@@ -218,7 +215,6 @@ describe('LoggedWork', () => {
         'hour'
       ])
     })
-
   })
 
   describe('GET /loggedwork/:id', () => {
@@ -230,7 +226,7 @@ describe('LoggedWork', () => {
           resolveWithFullResponse: true,
           json: true,
           headers: {
-            Accept: 'application/json',
+            Accept: 'application/json'
           }
         }
         await rp(options)
@@ -249,7 +245,7 @@ describe('LoggedWork', () => {
         resolveWithFullResponse: true,
         json: true,
         headers: {
-          Accept: 'application/json',
+          Accept: 'application/json'
         }
       }
 
@@ -262,7 +258,6 @@ describe('LoggedWork', () => {
     })
 
     it("should throw 404 if LoggedWork doesn't exist", async () => {
-
       try {
         const options = {
           method: 'GET',
@@ -270,7 +265,7 @@ describe('LoggedWork', () => {
           resolveWithFullResponse: true,
           json: true,
           headers: {
-            Accept: 'application/json',
+            Accept: 'application/json'
           }
         }
 
@@ -281,7 +276,6 @@ describe('LoggedWork', () => {
       }
     })
     it('should fetch loggedWork', async () => {
-
       const id = context.loggedWorkId
 
       const options = {
@@ -290,7 +284,7 @@ describe('LoggedWork', () => {
         resolveWithFullResponse: true,
         json: true,
         headers: {
-          Accept: 'application/json',
+          Accept: 'application/json'
         }
       }
 
@@ -301,8 +295,6 @@ describe('LoggedWork', () => {
       assert.hasAnyKeys(loggedwork, ['_id', 'user', 'project'])
       assert.equal(loggedwork._id, id)
     })
-
-
   })
   describe('PUT /loggedwork/:id', () => {
     it('should not update loggedwork if token is invalid', async () => {
@@ -325,7 +317,6 @@ describe('LoggedWork', () => {
       }
     })
 
-
     it('should update loggedwork if user request === loggedwork.user', async () => {
       const token = context.adminJWT
       const id = context.loggedWorkId
@@ -340,7 +331,7 @@ describe('LoggedWork', () => {
           Authorization: `Bearer ${token}`
         },
         body: {
-          loggedWork: { user: 'system', project: 'Awesome Project' }
+          loggedWork: { user: 'system', project: '56bd1da600a526986cf65c80' }
         }
       }
 
@@ -351,37 +342,34 @@ describe('LoggedWork', () => {
       assert.hasAnyKeys(loggedWork, ['_id', 'user', 'project'])
       assert.equal(loggedWork._id, id)
       assert.equal(loggedWork.user, 'system')
-      assert.equal(loggedWork.project, 'Awesome Project')
+      assert.equal(loggedWork.project, '56bd1da600a526986cf65c80')
     })
- 
-  it('should reject update loggedwork if user request != loggedwork.user', async () => {
-    const token = context.testUser.token
-    const id = context.loggedWorkId
-    try {
-      const options = {
-        method: 'PUT',
-        uri: `${LOCALHOST}/loggedwork/${id}`,
-        resolveWithFullResponse: true,
-        json: true,
-        headers: {
-          Accept: 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: {
-          loggedWork: { user: 'Best User', project: 'Awesome Project' }
+
+    it('should reject update loggedwork if user request != loggedwork.user', async () => {
+      const token = context.testUser.token
+      const id = context.loggedWorkId
+      try {
+        const options = {
+          method: 'PUT',
+          uri: `${LOCALHOST}/loggedwork/${id}`,
+          resolveWithFullResponse: true,
+          json: true,
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: {
+            loggedWork: { user: 'Best User', project: 'Awesome Project' }
+          }
         }
-      }
 
-
-
-      await rp(options)
+        await rp(options)
       // assert.equal(true, false, 'Unexpected behavior')
-    } catch (err) {
-      assert.equal(err.statusCode, 422)
-    }
-
+      } catch (err) {
+        assert.equal(err.statusCode, 422)
+      }
+    })
   })
-})
 
   describe('DELETE /loggedwork/:id', () => {
     it('should not delete loggedwork if token is invalid', async () => {
@@ -404,8 +392,6 @@ describe('LoggedWork', () => {
       }
     })
 
-
-
     it('should delete loggedworks with authorization', async () => {
       const token = context.adminJWT
       const id = context.loggedWorkId
@@ -427,5 +413,4 @@ describe('LoggedWork', () => {
       assert.equal(result.body.success, true)
     })
   })
-
 })
