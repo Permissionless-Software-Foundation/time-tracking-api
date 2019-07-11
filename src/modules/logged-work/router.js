@@ -21,6 +21,13 @@ module.exports.routes = [
   },
   {
     method: 'GET',
+    route: '/csv',
+    handlers: [
+      loggedWork.getLoggedWorksCSV
+    ]
+  },
+  {
+    method: 'GET',
     route: '/:id',
     handlers: [
       loggedWork.getLoggedWork
